@@ -5,43 +5,79 @@
 #include "MickeLiquidCrystal.h"
 
 
-MickeLiquidCrystal::MickeLiquidCrystal(uint8_t rs, uint8_t enable,
-	uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3)
-	:LiquidCrystal(rs, enable, d0, d1, d2, d3)
+MickeLiquidCrystal::MickeLiquidCrystal(uint8_t rs_Pin, uint8_t enable_Pin,
+	uint8_t d0_Pin, uint8_t d1_Pin, uint8_t d2_Pin, uint8_t d3_Pin)
+	:LiquidCrystal(rs_Pin, enable_Pin, d0_Pin, d1_Pin, d2_Pin, d3_Pin)
 {
 
 }
 
-void MickeLiquidCrystal::initLCDdisplay(uint8_t columns, uint8_t rows, int scrollSpeed)
+void MickeLiquidCrystal::initLCDdisplay(uint8_t numOfCols, uint8_t numOfRows, int scrollSpeed)
 {
-	_numOfColumns = columns;
-	_numOfRows = rows;
+	_numOfColumns = numOfCols;
+	_numOfRows = numOfRows;
 	_scrollSpeed = scrollSpeed;
-	begin(columns, rows);
+	begin(numOfCols, numOfRows);
 }
 
-void MickeLiquidCrystal::printDirect(int rowNo, String text)
+//Prints out a single line of text directly on display
+void MickeLiquidCrystal::printDirect(String text, uint8_t row, bool clearAllRows, bool scrollText)
 {
-	//Clear Row
-	setCursor(0, rowNo);
-	print("                ");
-	//Print Text
-	setCursor(0, rowNo);
-	print(text);
+	//Check if all rows is to be cleared or only the row thats being printed
+	//if (clearAllRows) 
+	//{
+	//	//Clearing the display
+	//	clear();
+	//}
+
+	String textToDisplay = text;
+	//Get first 16 chars from text
+	uint8_t textLenght = text.length();
+
+
+	//check if text is longer than the display can fit at one time and 
+	//if its going to be scrolled
+	if (textLenght > _numOfColumns && scrollText)
+	{
+		//Text is long and scroll text option is true
+		//Print first part of Text starting from left.
+		
+		
+
+		setCursor(0, row);
+		print("Scroll!");
+
+	}
+	else
+	{
+		//Check if text is shorter then display length and
+		// if it`s too short add blanks to remove old stuff that could remain.
+		for (uint8_t i = textLenght; i < _numOfColumns; i++)
+		{
+			textToDisplay += " ";
+		}
+		//Print first part of Text starting from left.
+		setCursor(0, row);
+		print(textToDisplay);
+	}
+
+
+
+
 }
 
 void MickeLiquidCrystal::rowText(uint8_t rowNo, String rowText)
 {
 	_rowData[rowNo].rowText = rowText;
 	_rowData[rowNo].update = true;
-	
+
 }
 
 void MickeLiquidCrystal::rowText(uint8_t rowNo, String rowText, bool scroll, bool continueScroll)
 {
 	_rowData[rowNo].rowText = rowText;
 	_rowData[rowNo].update = true;
-	
+
 }
 
 void MickeLiquidCrystal::UpdateDisplay()
@@ -92,10 +128,10 @@ void MickeLiquidCrystal::UpdateDisplay()
 			//{
 			//Set the start position of the text string to be displayed
 			currStartPos = _rowData[rowNo].textStartPos;
-			
+
 			//Serial.println(currStartPos);
 			//delay(500);
-			
+
 			//Set the end position of the text string so it not is larger then display
 			if ((textLen - currStartPos) > _numOfColumns)
 			{

@@ -14,20 +14,24 @@
 
 #include "LiquidCrystal.h"
 
-#define MAX_TEXT_LENGHT 25
-#define MAX_NUM_OF_ROWS 16
+const uint8_t displayRowMax = 2; //Maxumum of rows that can be handled by display library
+const uint8_t printDirectMaxLenght = 25; //Defines the maximum amount of display rows the library can handel
+
+#define MAX_PRINT_DIRECT_CHARS 25 //Maxum of displayed chars scrolled of total text
 
 class MickeLiquidCrystal : private LiquidCrystal
+
 {
 public:
-	MickeLiquidCrystal(uint8_t rs, uint8_t enable,
-		uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);
+	//MickeLiquidCrystal dispaycontrol object.
+	MickeLiquidCrystal(uint8_t rs_Pin, uint8_t enable_Pin,
+		uint8_t d0_Pin, uint8_t d1_Pin, uint8_t d2_Pin, uint8_t d3_Pin);
 
-	void initLCDdisplay(uint8_t columns, uint8_t rows, int scrollSpeed=300);
+	void initLCDdisplay(uint8_t numOfCols, uint8_t numOfRows, int scrollSpeed =300);
 
 	void printHej();
 
-	void printDirect(int rowNo, String text);
+	void printDirect(String text, uint8_t rowNo = 0, bool clearAllRows=true, bool scrollText=true);
 
 	void rowText(uint8_t rowNo, String rowText);
 	void rowText(uint8_t rowNo, String rowText, bool scroll,bool continueScroll=true);
@@ -51,7 +55,7 @@ private:
 		bool update = false;
 	};
 	
-	rowDataValues _rowData[MAX_NUM_OF_ROWS];
+	rowDataValues _rowData[displayRowMax];
 
 
 
